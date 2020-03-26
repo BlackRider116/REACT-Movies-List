@@ -1,26 +1,23 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import Header from './components/Header/Header';
+import { Route, withRouter, Switch, Redirect } from "react-router-dom";
+import FilmContainer from './components/Film/FilmContainer.jsx'
+import Bookmarks from './components/Bookmarks/Bookmarks.jsx'
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Header />
+      <div>
+        <Switch>
+          <Route exact path="/"><Redirect to="/films" /></Route>
+          <Route path='/films' render={() => <FilmContainer />} />
+          <Route path='/bookmarks' render={() => <Bookmarks />} />
+        </Switch>
+      </div>
     </div>
   );
 }
 
-export default App;
+export default withRouter(App);
