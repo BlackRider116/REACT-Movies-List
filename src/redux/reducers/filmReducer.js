@@ -7,8 +7,7 @@ const ACTIVE_TAG_NAME = '/film/ACTIVE_TAG_NAME'
 const GET_NEXT_FILMS = '/films/GET_NEXT_FILMS'
 
 const lengthOfMovieList = 15
-let filmNamesToFilterTags = []
-let filmNamesToFilterInput = []
+let filmNamesToFilter = []
 
 const initialState = {
     films: [],
@@ -78,10 +77,10 @@ export const filterFilmBody = (textBody) => async (dispatch, getState) => {
         return item
     })
 
-    filmNamesToFilterInput = filterFilms.length === response.length ? [] : filterFilms
+    filmNamesToFilter = filterFilms.length === response.length ? [] : filterFilms
 
-    !textBody ? dispatch(getFilmsThunk(textBody, filmNamesToFilterInput.length, false))
-        : dispatch(onInputBody(filterFilms.slice(0, lengthOfMovieList), textBody, nextButtonBoolean(filterFilms.length), filmNamesToFilterInput.length, true, filterTagNames))
+    !textBody ? dispatch(getFilmsThunk(textBody, filmNamesToFilter.length, false))
+        : dispatch(onInputBody(filterFilms.slice(0, lengthOfMovieList), textBody, nextButtonBoolean(filterFilms.length), filmNamesToFilter.length, true, filterTagNames))
 }
 
 const activeTagNames = (films, tagNames, activeTagsName, isMaxTagsError, isNextFilmsButton, hitList, isHitList, inputTextValue) => ({
@@ -111,11 +110,11 @@ export const activeTagFilmsThunk = (bodyTagName) => async (dispatch, getState) =
         })
     }
 
-    filmNamesToFilterTags = arrFilter.length === data.length ? [] : arrFilter
+    filmNamesToFilter = arrFilter.length === data.length ? [] : arrFilter
     const isHitList = activeNames.length !== 0 ? true : false
     const isMaxTagsError = stateActiveTags.length === 3 && activeNames.length === 3 ? true : false
     dispatch(activeTagNames(arrFilter.slice(0, lengthOfMovieList), filterTagNames, activeNames, isMaxTagsError,
-        nextButtonBoolean(arrFilter.length), filmNamesToFilterTags.length, isHitList, ''))
+        nextButtonBoolean(arrFilter.length), filmNamesToFilter.length, isHitList, ''))
 }
 
 const nextFilmButton = (films, isNextFilmsButton) => ({ type: GET_NEXT_FILMS, films, isNextFilmsButton })
@@ -123,14 +122,7 @@ const nextFilmButton = (films, isNextFilmsButton) => ({ type: GET_NEXT_FILMS, fi
 export const nextFilmsButtonThunk = () => async (dispatch, getState) => {
     const response = await data
     const state = getState().filmPage.films
-    let filmNames = []
-    if (filmNamesToFilterTags.length !== 0) {
-        filmNames = filmNamesToFilterTags
-    } else if (filmNamesToFilterInput.length !== 0) {
-        filmNames = filmNamesToFilterInput
-    } else {
-        filmNames = response
-    }
+    let filmNames = filmNamesToFilter.length !== 0 ? filmNamesToFilter : response
 
     const newState = filmNames.filter(item => !state.includes(item))
 
