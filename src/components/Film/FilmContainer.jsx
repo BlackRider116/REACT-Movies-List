@@ -3,9 +3,8 @@ import { connect } from "react-redux";
 import {
   getFilmsThunk,
   filterFilmBody,
-  tagFilmsThunk,
-  getTagThunk,
-  filterFilmToTag
+  activeTagFilmsThunk,
+  nextFilmsButtonThunk
 } from "../../redux/reducers/filmReducer";
 
 import classes from "../../styles/styles.module.scss";
@@ -16,27 +15,20 @@ import PaginationTag from "../PaginationTag/PaginationTag.jsx";
 class FilmContainer extends React.Component {
   componentDidMount() {
     this.props.getFilmsThunk();
-    this.props.getTagThunk();
   }
 
   componentDidUpdate() {
-    // console.log(!this.props.inputTextValue)
+    // console.log(this.props.films);
+    // console.log(this.props.isHitList);
+    // console.log(this.props.inputTextValue);
+    // console.log(this.props.tagNames);
+    // console.log(this.props.activeTagsName);
+    // console.log(this.props.isMaxTagsError);
   }
 
   onInputText = ev => {
     const body = ev.target.value;
     this.props.filterFilmBody(body);
-  };
-
-  onNextFilm = () => {
-    let inputValue = this.props.inputTextValue;
-    if (!inputValue) {
-      this.props.getFilmsThunk();
-    } else if (this.props.activeTagName.length > 0) {
-      this.props.filterFilmToTag(null);
-    } else {
-      this.props.filterFilmBody(inputValue);
-    }
   };
 
   render() {
@@ -48,10 +40,11 @@ class FilmContainer extends React.Component {
           onChange={this.onInputText}
         />
         <PaginationTag
-          tagName={this.props.tagName}
-          tagFilmsThunk={this.props.tagFilmsThunk}
+          tagNames={this.props.tagNames}
+          tagFilmsThunk={this.props.activeTagFilmsThunk}
+          {...this.props}
         />
-
+        {this.props.isHitList && <div>Найдено совпадений: {this.props.hitList}</div> }
         {this.props.films.map(item => {
           return (
             <div key={item.title}>
@@ -68,8 +61,8 @@ class FilmContainer extends React.Component {
         })}
 
         <div>
-          {this.props.nextButton && (
-            <button onClick={this.onNextFilm}>Показать еще</button>
+          {this.props.isNextFilmsButton && (
+            <button onClick={this.props.nextFilmsButtonThunk}>Показать еще</button>
           )}
         </div>
       </div>
@@ -80,11 +73,13 @@ class FilmContainer extends React.Component {
 const mapStateToProps = state => {
   return {
     films: state.filmPage.films,
-    nextButton: state.filmPage.nextButton,
+    isNextFilmsButton: state.filmPage.isNextFilmsButton,
     inputTextValue: state.filmPage.inputTextValue,
-    tagName: state.filmPage.tagName,
-
-    activeTagName: state.filmPage.activeTagName
+    tagNames: state.filmPage.tagNames,
+    activeTagsName: state.filmPage.activeTagsName,
+    hitList: state.filmPage.hitList,
+    isHitList: state.filmPage.isHitList,
+    isMaxTagsError: state.filmPage.isMaxTagsError
   };
 };
 
@@ -92,7 +87,6 @@ export default connect(mapStateToProps, {
   getFilmsThunk,
   setBookmarksThunk,
   filterFilmBody,
-  tagFilmsThunk,
-  getTagThunk,
-  filterFilmToTag
+  activeTagFilmsThunk,
+  nextFilmsButtonThunk
 })(FilmContainer);
