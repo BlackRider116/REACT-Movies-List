@@ -1,102 +1,110 @@
-const GET_BOOKMARKS = '/films/GET_BOOKMARKS'
-const SET_BOOKMARKS = '/films/SET_BOOKMARKS'
-const DELETE_BOOKMARKS = '/films/DELETE_BOOKMARKS'
+import { isBookmarksState } from "./filmReducer"
+
+const GET_BOOKMARKS = '/bookmarks/GET_BOOKMARKS'
+const DELETE_BOOKMARKS = '/bookmarks/DELETE_BOOKMARKS'
+const NEXT_FAVORITES_FILMS = '/bookmarks/NEXT_FAVORITES_FILMS'
+const DELETE_ALL_FAVORITES = '/bookmarks/DELETE_ALL_FAVORITES'
+
+const lengthOfMovieList = 15
 
 const initialState = {
-    bookmarks: []
+    bookmarks: [],
+    isFavoritesButton: false,
+    favoritesLength: 0
 }
 
 const bookmarksReducer = (state = initialState, action) => {
     switch (action.type) {
         case GET_BOOKMARKS:
+        case DELETE_BOOKMARKS:
+        case DELETE_ALL_FAVORITES:
             return {
                 ...state,
-                bookmarks: action.filmName
+                ...action.payload
             }
-        case SET_BOOKMARKS:
+        case NEXT_FAVORITES_FILMS:
             return {
                 ...state,
                 bookmarks: [
                     ...state.bookmarks,
-                     action.filmName
-                ]
-            }
-        case DELETE_BOOKMARKS:
-            return {
-                ...state,
-                bookmarks: deleteFilm(state.bookmarks, action.filmName)
+                    ...action.bookmarks
+                ],
+                isFavoritesButton: action.isFavoritesButton
             }
         default:
             return state;
     }
 }
 
-
-
-// const filterBookmarks = (movies, filmName) => {
-//     // console.log(movies)
-//     // console.log(filmName)
-//     return movies.filter(item => {
-//         console.log(movies)
-//         if(movies === []) {
-//             console.log(filmName)
-//             return  filmName}
-//         if (item.title !== filmName.title) {
-            
-//             return filmName
-//         }
-//         // return movies
-//     })
-// }
-
-// const deleteFilm = (movies, filmName) => {
-//     return movies.filter(item => {
-//         return (item.title !== filmName,
-//             localStorage.removeItem('localFilmName')
-//         )
-//     })
-// }
-
-// export const setBookmarksThunk = filmName => async (dispatch, getState) => {
-//     const localItem = getState().bookmarksPage.bookmarks
-//     let newItem = localItem.filter(item => {
-//         if (item !== filmName) {
-//             dispatch(setBookmarks(filmName))
-//         }
-//     })
-//     console.log(newItem)
-
-
-
-//     // dispatch(setBookmarks(filmName))
-// }
-
-const setBookmarks = (filmName) => ({ type: SET_BOOKMARKS, filmName })
-export const setBookmarksThunk = filmName => async (dispatch, getState) => {
-    const localItem = getState().bookmarksPage.bookmarks
-    dispatch(setBookmarks(filmName))
-    localStorage.setItem('localFilmName', JSON.stringify(localItem))
-}
-
-const getBookmarks = (filmName) => ({ type: GET_BOOKMARKS, filmName })
+const getBookmarks = (bookmarks, isFavoritesButton, favoritesLength) => ({
+    type: GET_BOOKMARKS,
+    payload: { bookmarks, isFavoritesButton, favoritesLength }
+})
 export const getBookmarksThunk = () => (dispatch) => {
-    const itemName = JSON.parse(localStorage.getItem('localFilmName'))
-    if (itemName) {
-        dispatch(getBookmarks(itemName))
+    const getLocalItem = JSON.parse(localStorage.getItem('Movies'))
+    if (getLocalItem !== null) {
+        dispatch(getBookmarks(getLocalItem.slice(0, lengthOfMovieList), nextButtonBoolean(getLocalItem), getLocalItem.length))
     }
 }
 
-const deleteBookmarks = (filmName) => ({ type: DELETE_BOOKMARKS, filmName })
-const deleteFilm = (movies, filmName) => {
-    return movies.filter(item => {
-        return (item.title !== filmName.title,
-            localStorage.removeItem('localFilmName')
-        )
-    })
-}
-export const deleteBookmarksThunk = (filmName) => dispatch => {
-    dispatch(deleteBookmarks(filmName))
+export const setBookmarksThunk = filmName => async (dispatch, getState) => {
+    const stateFilms = getState().filmPage.films
+    const getLocalItem = JSON.parse(localStorage.getItem('Movies'))
+    let arr = []
 
+    if (getLocalItem !== null) arr.push(...getLocalItem)
+    const newFilmState = stateFilms.map(item => {
+        if (item.title === filmName.title) {
+            const isBookmarks = item.isBookmarks ? false : true
+            const itemValue = { ...item, isBookmarks }
+            isBookmarks === true ? arr.push(itemValue) :
+                arr = arr.filter(p => p.title !== item.title)
+            return itemValue
+        }
+        return item
+    })
+
+    dispatch(isBookmarksState(newFilmState))
+    localStorage.setItem('Movies', JSON.stringify(arr))
+}
+
+const deleteBookmarks = (bookmarks, isFavoritesButton, favoritesLength) => ({
+    type: DELETE_BOOKMARKS,
+    payload: { bookmarks, isFavoritesButton, favoritesLength }
+})
+
+export const deleteBookmarksThunk = (filmName) => dispatch => {
+    const getLocalItem = JSON.parse(localStorage.getItem('Movies'))
+    const newState = getLocalItem.filter(item => item.title !== filmName.title)
+    localStorage.setItem('Movies', JSON.stringify(newState))
+    dispatch(deleteBookmarks(newState.slice(0, lengthOfMovieList), nextButtonBoolean(newState), newState.length))
+}
+
+const nextFavoritesFilms = (bookmarks, isFavoritesButton) => ({ type: NEXT_FAVORITES_FILMS, bookmarks, isFavoritesButton })
+
+export const nextFavoritesFilmsThunk = () => (dispatch, getState) => {
+    let getLocalItem = JSON.parse(localStorage.getItem('Movies'))
+    const state = getState().bookmarksPage.bookmarks
+
+    state.map(itemFilm => {
+        getLocalItem = getLocalItem.filter(item => item.title !== itemFilm.title)
+    })
+
+    dispatch(nextFavoritesFilms(getLocalItem.slice(0, lengthOfMovieList), nextButtonBoolean(getLocalItem)))
+}
+
+const nextButtonBoolean = (arrLength) => {
+    return arrLength.length <= lengthOfMovieList ? false : true
+}
+
+const deleteAllFavorites = (bookmarks, isFavoritesButton, favoritesLength) => ({
+    type: DELETE_ALL_FAVORITES,
+    payload: { bookmarks, isFavoritesButton, favoritesLength }
+})
+
+export const deleteAllFavoritesThunk = () => dispatch => {
+    localStorage.removeItem('Movies');
+    dispatch(deleteAllFavorites([], false, 0))
 }
 
 export default bookmarksReducer;

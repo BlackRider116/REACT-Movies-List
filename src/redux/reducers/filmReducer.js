@@ -5,6 +5,7 @@ const GET_FILMS = '/films/GET_FILM'
 const TEXT_BODY = '/films/TEXT_BODY'
 const ACTIVE_TAG_NAME = '/film/ACTIVE_TAG_NAME'
 const GET_NEXT_FILMS = '/films/GET_NEXT_FILMS'
+const IS_BOOKMARKS = '/films/IS_BOOKMARKS'
 
 const lengthOfMovieList = 15
 let filmNamesToFilter = []
@@ -25,6 +26,7 @@ const filmReducer = (state = initialState, action) => {
         case GET_FILMS:
         case TEXT_BODY:
         case ACTIVE_TAG_NAME:
+        case IS_BOOKMARKS:
             return {
                 ...state,
                 ...action.payload
@@ -44,23 +46,24 @@ const filmReducer = (state = initialState, action) => {
 }
 
 const getFilms = (films, tagNames, inputTextValue, isNextFilmsButton, hitList, isHitList) =>
-    ({ type: GET_FILMS, payload: { films, tagNames, inputTextValue, isNextFilmsButton, hitList, isHitList } })
+    ({ type: GET_FILMS, payload: { films: inFavorites(films), tagNames, inputTextValue, isNextFilmsButton, hitList, isHitList } })
 
 export const getFilmsThunk = (textBody, hitList, isHitList) => async (dispatch) => {
     const response = await data
     const responseTags = await tags
+
     let id = 0
-    const dataItem = responseTags.map((item) => {
+    const dataTagItem = responseTags.map((item) => {
         id++
         return ({ name: item, tagActive: false, id })
     })
 
-    dispatch(getFilms(response.slice(0, lengthOfMovieList), dataItem, textBody, nextButtonBoolean(data.length), hitList, isHitList))
+    dispatch(getFilms(response.slice(0, lengthOfMovieList), dataTagItem, textBody, nextButtonBoolean(data.length), hitList, isHitList))
 }
 
 const onInputBody = (films, inputTextValue, isNextFilmsButton, hitList, isHitList, tagNames) => ({
     type: TEXT_BODY,
-    payload: { films, inputTextValue, isNextFilmsButton, hitList, isHitList, tagNames }
+    payload: { films: inFavorites(films), inputTextValue, isNextFilmsButton, hitList, isHitList, tagNames }
 })
 
 export const filterFilmBody = (textBody) => async (dispatch, getState) => {
@@ -85,7 +88,7 @@ export const filterFilmBody = (textBody) => async (dispatch, getState) => {
 
 const activeTagNames = (films, tagNames, activeTagsName, isMaxTagsError, isNextFilmsButton, hitList, isHitList, inputTextValue) => ({
     type: ACTIVE_TAG_NAME,
-    payload: { films, tagNames, activeTagsName, isMaxTagsError, isNextFilmsButton, hitList, isHitList, inputTextValue }
+    payload: { films: inFavorites(films), tagNames, activeTagsName, isMaxTagsError, isNextFilmsButton, hitList, isHitList, inputTextValue }
 })
 
 export const activeTagFilmsThunk = (bodyTagName) => async (dispatch, getState) => {
@@ -117,20 +120,42 @@ export const activeTagFilmsThunk = (bodyTagName) => async (dispatch, getState) =
         nextButtonBoolean(arrFilter.length), filmNamesToFilter.length, isHitList, ''))
 }
 
-const nextFilmButton = (films, isNextFilmsButton) => ({ type: GET_NEXT_FILMS, films, isNextFilmsButton })
+const nextFilmButton = (films, isNextFilmsButton) => ({ type: GET_NEXT_FILMS, films: inFavorites(films), isNextFilmsButton })
 
 export const nextFilmsButtonThunk = () => async (dispatch, getState) => {
     const response = await data
-    const state = getState().filmPage.films
+    let state = getState().filmPage.films
     let filmNames = filmNamesToFilter.length !== 0 ? filmNamesToFilter : response
 
-    const newState = filmNames.filter(item => !state.includes(item))
+    state.map(itemFilm => {
+        filmNames = filmNames.filter(item => item.title !== itemFilm.title)
+    })
 
-    dispatch(nextFilmButton(newState.slice(0, lengthOfMovieList), nextButtonBoolean(newState.length)))
+    dispatch(nextFilmButton(filmNames.slice(0, lengthOfMovieList), nextButtonBoolean(filmNames.length)))
 }
 
 const nextButtonBoolean = (arrLength) => {
     return arrLength <= lengthOfMovieList ? false : true
+}
+
+export const isBookmarksState = films => ({ type: IS_BOOKMARKS, payload: { films } })
+
+const inFavorites = (itemName) => {
+    const getLocalItem = JSON.parse(localStorage.getItem('Movies'))
+
+    if (getLocalItem !== null) {
+        let arrFilter = itemName
+        getLocalItem.map(localItem => {
+            arrFilter = arrFilter.map(item => {
+                if (item.title === localItem.title) {
+                    return { ...item, isBookmarks: true }
+                }
+                return item
+            })
+        })
+        return arrFilter
+    }
+    else return itemName
 }
 
 export default filmReducer;

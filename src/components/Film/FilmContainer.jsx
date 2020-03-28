@@ -7,7 +7,7 @@ import {
   nextFilmsButtonThunk
 } from "../../redux/reducers/filmReducer";
 
-import classes from "../../styles/styles.module.scss";
+import styles from "../../styles/styles.module.scss";
 import { Input } from "antd";
 import { setBookmarksThunk } from "../../redux/reducers/bookmarksReducer";
 import PaginationTag from "../PaginationTag/PaginationTag.jsx";
@@ -15,15 +15,6 @@ import PaginationTag from "../PaginationTag/PaginationTag.jsx";
 class FilmContainer extends React.Component {
   componentDidMount() {
     this.props.getFilmsThunk();
-  }
-
-  componentDidUpdate() {
-    // console.log(this.props.films);
-    // console.log(this.props.isHitList);
-    // console.log(this.props.inputTextValue);
-    // console.log(this.props.tagNames);
-    // console.log(this.props.activeTagsName);
-    // console.log(this.props.isMaxTagsError);
   }
 
   onInputText = ev => {
@@ -49,13 +40,14 @@ class FilmContainer extends React.Component {
           return (
             <div key={item.title}>
               {item.title}
-              <button
+              <span className={styles.selected}
                 onClick={() => {
                   this.props.setBookmarksThunk(item);
                 }}
               >
-                ☆
-              </button>
+  
+               {item.isBookmarks === true ? '★' : '☆' }
+              </span>
             </div>
           );
         })}
@@ -79,7 +71,7 @@ const mapStateToProps = state => {
     activeTagsName: state.filmPage.activeTagsName,
     hitList: state.filmPage.hitList,
     isHitList: state.filmPage.isHitList,
-    isMaxTagsError: state.filmPage.isMaxTagsError
+    isMaxTagsError: state.filmPage.isMaxTagsError,
   };
 };
 
