@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/TaksNet-REACT/precache-manifest.2cff562f7bff989860540a7c1bd278ae.js"
+  "/TaksNet-REACT/precache-manifest.68e7bfe2aadfd45503ff3dab7a1581de.js"
 );
 
 self.addEventListener('message', (event) => {
