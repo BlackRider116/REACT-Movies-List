@@ -2,14 +2,13 @@ import React from "react";
 import { connect } from "react-redux";
 import {
   getFilmsThunk,
-  filterFilmBody,
-  activeTagFilmsThunk,
-  nextFilmsButtonThunk
+  filterToMoviesThunk,
+  nextFilmsButtonThunk,
+  setBookmarksThunk
 } from "../../redux/reducers/filmReducer";
 
 import styles from "../../styles/styles.module.scss";
 import { Input } from "antd";
-import { setBookmarksThunk } from "../../redux/reducers/bookmarksReducer";
 import PaginationTag from "../PaginationTag/PaginationTag.jsx";
 
 import { Button,  OverlayTrigger, Tooltip } from "react-bootstrap";
@@ -22,26 +21,26 @@ class Movies extends React.Component {
 
   onInputText = ev => {
     const body = ev.target.value;
-    this.props.filterFilmBody(body);
+    this.props.filterToMoviesThunk(body, true);
   };
 
-  renderTooltip(props) {
-    return (
-      <Tooltip id="button-tooltip" {...props}>
-        Добавить в избранное
-      </Tooltip>
-    );
-  }
+  // renderTooltip(props) {
+  //   return (
+  //     <Tooltip id="button-tooltip" {...props}>
+  //       Добавить в избранное
+  //     </Tooltip>
+  //   );
+  // }
 
-  Example = () => (
-    <OverlayTrigger
-      placement="right"
-      delay={{ show: 250, hide: 400 }}
-      overlay={this.renderTooltip}
-    >
-      <Button variant="success">Hover me to see</Button>
-    </OverlayTrigger>
-  );
+  // Example = () => (
+  //   <OverlayTrigger
+  //     placement="right"
+  //     delay={{ show: 250, hide: 400 }}
+  //     overlay={this.renderTooltip}
+  //   >
+  //     <Button variant="success">Hover me to see</Button>
+  //   </OverlayTrigger>
+  // );
 
   render() {
     return (
@@ -54,7 +53,7 @@ class Movies extends React.Component {
 
         <PaginationTag
           tagNames={this.props.tagNames}
-          tagFilmsThunk={this.props.activeTagFilmsThunk}
+          tagFilmsThunk={this.props.filterToMoviesThunk}
           {...this.props}
         />
 
@@ -89,7 +88,6 @@ const mapStateToProps = state => {
 export default connect(mapStateToProps, {
   getFilmsThunk,
   setBookmarksThunk,
-  filterFilmBody,
-  activeTagFilmsThunk,
+  filterToMoviesThunk,
   nextFilmsButtonThunk
 })(Movies);

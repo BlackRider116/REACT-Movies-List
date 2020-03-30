@@ -8,8 +8,7 @@ const GET_NEXT_FILMS = '/films/GET_NEXT_FILMS'
 const IS_BOOKMARKS = '/films/IS_BOOKMARKS'
 
 const lengthOfMovieList = 15
-let arrMoviesByName = []
-let arrMoviesByTag = []
+let arrFilterMoviesBody = []
 
 const initialState = {
     films: [],
@@ -67,59 +66,77 @@ const onInputBodyAC = (films, inputTextValue, isNextFilmsButton, hitList, isHitL
     payload: { films: inFavorites(films), inputTextValue, isNextFilmsButton, hitList, isHitList }
 })
 
-export const filterFilmBody = (textBody) => async (dispatch) => {
-    const filmNames = !arrMoviesByTag.length ? await data : arrMoviesByTag
-
-    const filterFilms = filmNames.filter(item => {
-        return item.title.toLowerCase().includes(textBody)
-    })
-
-    arrMoviesByName = !textBody ? [] : filterFilms
-    const isHitList = !textBody && !arrMoviesByTag.length ? false : true
-    dispatch(onInputBodyAC(filterFilms.slice(0, lengthOfMovieList), textBody,
-        nextButtonBoolean(filterFilms.length), filterFilms.length, isHitList))
-}
-
 const activeTagNamesAC = (films, tagNames, activeTagsName, isMaxTagsError, isNextFilmsButton, hitList, isHitList) => ({
     type: ACTIVE_TAG_NAME,
     payload: { films: inFavorites(films), tagNames, activeTagsName, isMaxTagsError, isNextFilmsButton, hitList, isHitList }
 })
 
-export const activeTagFilmsThunk = (bodyTagName) => async (dispatch, getState) => {
-    let filmNames = !arrMoviesByName.length ? await data : arrMoviesByName
-    const stateTagNames = getState().filmPage.tagNames
+export const filterToMoviesThunk = (body, boolean) => async (dispatch, getState) => {
+    const response = await data
     const stateActiveTags = getState().filmPage.activeTagsName
-    let activeTagNames = []
+    const stateInputTextValue = getState().filmPage.inputTextValue
 
-    const filterTagNames = stateTagNames.map(item => {
-        if (item.name === bodyTagName) {
-            let activeItem = !item.tagActive && stateActiveTags.length < 3 ? true : false
-            if (activeItem) { activeTagNames.push(item.name) }
-            return { ...item, tagActive: activeItem };
-        }
-        if (item.tagActive) { activeTagNames.push(item.name) }
-        return item
-    })
+    if (boolean === true) {
+        const moviesByTag = moviesFilterByTag(response, stateActiveTags)
+        const filterFilmsName = moviesFilterByName(moviesByTag, body)
 
-    for (let tagActiveName of activeTagNames) {
-        filmNames = filmNames.filter(item => {
-            return item.tags.includes(tagActiveName)
+        dispatch(onInputBodyAC(filterFilmsName.slice(0, lengthOfMovieList), body,
+            nextButtonBoolean(filterFilmsName.length), filterFilmsName.length, isHitList(filterFilmsName)))
+    } else {
+        let stateTagNames = getState().filmPage.tagNames
+        let activeTagNames = []
+        
+        stateTagNames = stateTagNames.map(item => {
+            if (item.name === body) {
+                let activeItem = !item.tagActive && stateActiveTags.length < 3 ? true : false
+                if (activeItem) { activeTagNames.push(item.name) }
+                return { ...item, tagActive: activeItem };
+            }
+            if (item.tagActive) { activeTagNames.push(item.name) }
+            return item
+        })
+
+        const moviesByName = moviesFilterByName(response, stateInputTextValue)
+        const filterFilmsByTag = moviesFilterByTag(moviesByName, activeTagNames)
+
+        const isMaxTagsError = stateActiveTags.length === 3 && activeTagNames.length === 3 ? true : false
+        dispatch(activeTagNamesAC(filterFilmsByTag.slice(0, lengthOfMovieList), stateTagNames, activeTagNames, isMaxTagsError,
+            nextButtonBoolean(filterFilmsByTag.length), filterFilmsByTag.length, isHitList(filterFilmsByTag)))
+    }
+
+    function moviesFilterByName(movies, inputBody = '') {
+        return movies.filter(item => {
+            return item.title.toLowerCase().includes(inputBody)
         })
     }
 
-    arrMoviesByTag = !activeTagNames.length ? [] : filmNames
+    function moviesFilterByTag(movies, activeTagNames) {
+        let films = movies
+        for (let tagActiveName of activeTagNames) {
+            films = films.filter(item => {
+                return item.tags.includes(tagActiveName)
+            })
+        }
+        return films
+    }
 
-    const isHitList = !activeTagNames.length && !arrMoviesByName.length ? false : true
-    const isMaxTagsError = stateActiveTags.length === 3 && activeTagNames.length === 3 ? true : false
-    dispatch(activeTagNamesAC(filmNames.slice(0, lengthOfMovieList), filterTagNames, activeTagNames, isMaxTagsError,
-        nextButtonBoolean(filmNames.length), arrMoviesByTag.length, isHitList))
+    function isHitList (arr) {
+        if (arr.length === response.length){
+            arrFilterMoviesBody = []
+            return false
+        } else {
+            arrFilterMoviesBody = arr
+            return true
+        }
+    }
+
 }
 
 const nextFilmButtonAC = (films, isNextFilmsButton) => ({ type: GET_NEXT_FILMS, films: inFavorites(films), isNextFilmsButton })
 
 export const nextFilmsButtonThunk = () => async (dispatch, getState) => {
     let state = getState().filmPage.films
-    let filmNames = !arrMoviesByTag.length ? await data : arrMoviesByTag
+    let filmNames = !arrFilterMoviesBody.length ? await data : arrFilterMoviesBody
 
     state.map(itemFilm => {
         filmNames = filmNames.filter(item => item.title !== itemFilm.title)
@@ -128,11 +145,32 @@ export const nextFilmsButtonThunk = () => async (dispatch, getState) => {
     dispatch(nextFilmButtonAC(filmNames.slice(0, lengthOfMovieList), nextButtonBoolean(filmNames.length)))
 }
 
+const isBookmarksStateAC = films => ({ type: IS_BOOKMARKS, payload: { films } })
+
+export const setBookmarksThunk = filmName => async (dispatch, getState) => {
+    const stateFilms = getState().filmPage.films
+    const getLocalItem = JSON.parse(localStorage.getItem('Movies'))
+    let arr = []
+
+    if (getLocalItem !== null) arr.push(...getLocalItem)
+    const newFilmState = stateFilms.map(item => {
+        if (item.title === filmName.title) {
+            const isBookmarks = item.isBookmarks ? false : true
+            const itemValue = { ...item, isBookmarks }
+            isBookmarks === true ? arr.push(itemValue) :
+                arr = arr.filter(p => p.title !== item.title)
+            return itemValue
+        }
+        return item
+    })
+
+    dispatch(isBookmarksStateAC(newFilmState))
+    localStorage.setItem('Movies', JSON.stringify(arr))
+}
+
 const nextButtonBoolean = (arrLength) => {
     return arrLength <= lengthOfMovieList ? false : true
 }
-
-export const isBookmarksStateAC = films => ({ type: IS_BOOKMARKS, payload: { films } })
 
 const inFavorites = (itemName) => {
     const getLocalItem = JSON.parse(localStorage.getItem('Movies'))

@@ -1,5 +1,3 @@
-import { isBookmarksStateAC } from "./filmReducer"
-
 const GET_BOOKMARKS = '/bookmarks/GET_BOOKMARKS'
 const DELETE_BOOKMARKS = '/bookmarks/DELETE_BOOKMARKS'
 const NEXT_FAVORITES_FILMS = '/bookmarks/NEXT_FAVORITES_FILMS'
@@ -45,27 +43,6 @@ export const getBookmarksThunk = () => (dispatch) => {
     if (getLocalItem !== null) {
         dispatch(getBookmarks(getLocalItem.slice(0, lengthOfMovieList), nextButtonBoolean(getLocalItem), getLocalItem.length))
     }
-}
-
-export const setBookmarksThunk = filmName => async (dispatch, getState) => {
-    const stateFilms = getState().filmPage.films
-    const getLocalItem = JSON.parse(localStorage.getItem('Movies'))
-    let arr = []
-
-    if (getLocalItem !== null) arr.push(...getLocalItem)
-    const newFilmState = stateFilms.map(item => {
-        if (item.title === filmName.title) {
-            const isBookmarks = item.isBookmarks ? false : true
-            const itemValue = { ...item, isBookmarks }
-            isBookmarks === true ? arr.push(itemValue) :
-                arr = arr.filter(p => p.title !== item.title)
-            return itemValue
-        }
-        return item
-    })
-
-    dispatch(isBookmarksStateAC(newFilmState))
-    localStorage.setItem('Movies', JSON.stringify(arr))
 }
 
 const deleteBookmarks = (bookmarks, isFavoritesButton, favoritesLength) => ({
