@@ -7,6 +7,7 @@ import {
   nextFavoritesFilmsThunk,
   deleteAllFavoritesThunk
 } from "../../redux/reducers/bookmarksReducer";
+import MoviesList from "../MoviesList/MoviesList";
 
 class Bookmarks extends React.Component {
   componentDidMount() {
@@ -24,24 +25,13 @@ class Bookmarks extends React.Component {
             </button>
           </div>
         )}
-        {this.props.bookmarks.map(item => {
-          return (
-            <div key={item.title}>
-              {item.title}
-              <span
-                className={styles.selected}
-                onClick={() => this.props.deleteBookmarksThunk(item)}
-              >
-                ★
-              </span>
-            </div>
-          );
-        })}
-        {this.props.isFavoritesButton && (
-          <button onClick={this.props.nextFavoritesFilmsThunk}>
-            Показать еще
-          </button>
-        )}
+
+        <MoviesList
+          filmNames={this.props.bookmarks}
+          isFavorites={this.props.deleteBookmarksThunk}
+          isNextFilmsButton={this.props.isFavoritesButton}
+          onNextFilmsButton={this.props.nextFavoritesFilmsThunk}
+        />
       </div>
     );
   }

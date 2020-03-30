@@ -1,8 +1,8 @@
 import React from 'react';
-import './App.css';
+import './App.scss';
 import Header from './components/Header/Header';
 import { Route, withRouter, Switch, Redirect } from "react-router-dom";
-import FilmContainer from './components/Film/FilmContainer.jsx'
+import Movies from './components/Movies/Movies.jsx'
 import Bookmarks from './components/Bookmarks/Bookmarks.jsx'
 
 function App() {
@@ -12,7 +12,7 @@ function App() {
       <div>
         <Switch>
           <Route exact path="/"><Redirect to="/films" /></Route>
-          <Route path='/films' render={() => <FilmContainer />} />
+          <Route path='/films' render={() => <Movies />} />
           <Route path='/bookmarks' render={() => <Bookmarks />} />
         </Switch>
       </div>

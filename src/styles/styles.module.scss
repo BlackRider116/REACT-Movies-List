@@ -1,3 +1,5 @@
+@import "~bootstrap/scss/bootstrap";
+
 .item a {
   position: relative;
   display: inline-block;
@@ -58,8 +60,24 @@
   color: rgb(228, 0, 0);
 }
 
+.content {
+  display: table;
+  &Movies{
+    vertical-align: middle;
+  }
+}
 .selected {
-  // color: gold;
+  display: table-cell !important;
+  vertical-align: middle;
   cursor: pointer;
-  font-size: 25px;
+  font-size: 30px;
+  float: right;
+  margin-right: 10px;
+  &Ok {
+    color: rgb(224, 191, 0);
+  }
+}
+
+.card {
+  width: 300px;
 }

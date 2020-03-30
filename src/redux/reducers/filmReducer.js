@@ -68,8 +68,7 @@ const onInputBodyAC = (films, inputTextValue, isNextFilmsButton, hitList, isHitL
 })
 
 export const filterFilmBody = (textBody) => async (dispatch) => {
-    const response = await data
-    const filmNames = !arrMoviesByTag.length ? response : arrMoviesByTag
+    const filmNames = !arrMoviesByTag.length ? await data : arrMoviesByTag
 
     const filterFilms = filmNames.filter(item => {
         return item.title.toLowerCase().includes(textBody)
@@ -87,8 +86,7 @@ const activeTagNamesAC = (films, tagNames, activeTagsName, isMaxTagsError, isNex
 })
 
 export const activeTagFilmsThunk = (bodyTagName) => async (dispatch, getState) => {
-    const response = await data
-    let filmNames = !arrMoviesByName.length ? response : arrMoviesByName
+    let filmNames = !arrMoviesByName.length ? await data : arrMoviesByName
     const stateTagNames = getState().filmPage.tagNames
     const stateActiveTags = getState().filmPage.activeTagsName
     let activeTagNames = []

@@ -12,7 +12,10 @@ import { Input } from "antd";
 import { setBookmarksThunk } from "../../redux/reducers/bookmarksReducer";
 import PaginationTag from "../PaginationTag/PaginationTag.jsx";
 
-class FilmContainer extends React.Component {
+import { Button,  OverlayTrigger, Tooltip } from "react-bootstrap";
+import MoviesList from "../MoviesList/MoviesList";
+
+class Movies extends React.Component {
   componentDidMount() {
     this.props.getFilmsThunk();
   }
@@ -22,6 +25,24 @@ class FilmContainer extends React.Component {
     this.props.filterFilmBody(body);
   };
 
+  renderTooltip(props) {
+    return (
+      <Tooltip id="button-tooltip" {...props}>
+        Добавить в избранное
+      </Tooltip>
+    );
+  }
+
+  Example = () => (
+    <OverlayTrigger
+      placement="right"
+      delay={{ show: 250, hide: 400 }}
+      overlay={this.renderTooltip}
+    >
+      <Button variant="success">Hover me to see</Button>
+    </OverlayTrigger>
+  );
+
   render() {
     return (
       <div>
@@ -30,33 +51,23 @@ class FilmContainer extends React.Component {
           value={this.props.inputTextValue}
           onChange={this.onInputText}
         />
+
         <PaginationTag
           tagNames={this.props.tagNames}
           tagFilmsThunk={this.props.activeTagFilmsThunk}
           {...this.props}
         />
-        {this.props.isHitList && <div>Найдено совпадений: {this.props.hitList}</div> }
-        {this.props.films.map(item => {
-          return (
-            <div key={item.title}>
-              {item.title}
-              <span className={styles.selected}
-                onClick={() => {
-                  this.props.setBookmarksThunk(item);
-                }}
-              >
-  
-               {item.isBookmarks === true ? '★' : '☆' }
-              </span>
-            </div>
-          );
-        })}
 
-        <div>
-          {this.props.isNextFilmsButton && (
-            <button onClick={this.props.nextFilmsButtonThunk}>Показать еще</button>
-          )}
-        </div>
+        {this.props.isHitList && (
+          <div>Найдено совпадений: {this.props.hitList}</div>
+        )}
+
+        <MoviesList
+          filmNames={this.props.films}
+          isFavorites={this.props.setBookmarksThunk}
+          isNextFilmsButton={this.props.isNextFilmsButton}
+          onNextFilmsButton={this.props.nextFilmsButtonThunk}
+        />
       </div>
     );
   }
@@ -71,7 +82,7 @@ const mapStateToProps = state => {
     activeTagsName: state.filmPage.activeTagsName,
     hitList: state.filmPage.hitList,
     isHitList: state.filmPage.isHitList,
-    isMaxTagsError: state.filmPage.isMaxTagsError,
+    isMaxTagsError: state.filmPage.isMaxTagsError
   };
 };
 
@@ -81,4 +92,4 @@ export default connect(mapStateToProps, {
   filterFilmBody,
   activeTagFilmsThunk,
   nextFilmsButtonThunk
-})(FilmContainer);
+})(Movies);
