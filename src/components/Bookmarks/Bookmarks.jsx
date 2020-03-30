@@ -15,16 +15,31 @@ class Bookmarks extends React.Component {
   }
 
   render() {
+    const style = {
+      width: "480px",
+      margin: "5px",
+      fontSize: "18px",
+      paddingLeft: this.props.favoritesLength !== 0 ? "100px" : "0px",
+      backgroundColor: "rgb(235, 235, 235)"
+    };
+
     return (
       <div>
-        {this.props.favoritesLength !== 0 && (
-          <div>
-            В избранном {this.props.favoritesLength} фильмов
-            <button onClick={this.props.deleteAllFavoritesThunk}>
-              Очистить список
-            </button>
-          </div>
-        )}
+        <div className="card mx-auto" style={style}>
+          {this.props.favoritesLength !== 0 ? (
+            <div>
+              Фильмов в избранном: {this.props.favoritesLength}
+              <button
+                className="btn btn-danger btn-sm float-right"
+                onClick={this.props.deleteAllFavoritesThunk}
+              >
+                Очистить список
+              </button>
+            </div>
+          ) : (
+            <div>Вы не выбрали ни одного фильма</div>
+          )}
+        </div>
 
         <MoviesList
           filmNames={this.props.bookmarks}

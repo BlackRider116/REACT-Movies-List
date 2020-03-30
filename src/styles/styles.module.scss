@@ -1,10 +1,8 @@
-@import "~bootstrap/scss/bootstrap";
-
 .item a {
   position: relative;
   display: inline-block;
-  width: 100px;
-  line-height: 30px;
+  width: 235px;
+  line-height: 40px;
   text-align: center;
   text-decoration: none;
   text-shadow: 0 -1px 1px rgb(0, 0, 0);
@@ -19,7 +17,8 @@
     rgb(70, 70, 70) 52%,
     rgb(100, 100, 100)
   );
-  margin: 8px;
+  margin: 3px;
+  font-size: 20px;
   &.active {
     color: gold;
     text-decoration: none;
@@ -58,26 +57,23 @@
 
 .maxTagsError {
   color: rgb(228, 0, 0);
+  font-size: 15px;
+  font-weight: bolder;
 }
 
 .content {
-  display: table;
-  &Movies{
-    vertical-align: middle;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  &Movies {
+    width: 90%;
   }
 }
 .selected {
-  display: table-cell !important;
-  vertical-align: middle;
   cursor: pointer;
   font-size: 30px;
-  float: right;
-  margin-right: 10px;
+  color: rgb(155, 155, 155);
   &Ok {
     color: rgb(224, 191, 0);
   }
-}
-
-.card {
-  width: 300px;
 }

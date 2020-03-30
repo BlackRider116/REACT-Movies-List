@@ -6,12 +6,9 @@ import {
   nextFilmsButtonThunk,
   setBookmarksThunk
 } from "../../redux/reducers/filmReducer";
-
-import styles from "../../styles/styles.module.scss";
 import { Input } from "antd";
 import PaginationTag from "../PaginationTag/PaginationTag.jsx";
-
-import { Button,  OverlayTrigger, Tooltip } from "react-bootstrap";
+import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import MoviesList from "../MoviesList/MoviesList";
 
 class Movies extends React.Component {
@@ -24,29 +21,12 @@ class Movies extends React.Component {
     this.props.filterToMoviesThunk(body, true);
   };
 
-  // renderTooltip(props) {
-  //   return (
-  //     <Tooltip id="button-tooltip" {...props}>
-  //       Добавить в избранное
-  //     </Tooltip>
-  //   );
-  // }
-
-  // Example = () => (
-  //   <OverlayTrigger
-  //     placement="right"
-  //     delay={{ show: 250, hide: 400 }}
-  //     overlay={this.renderTooltip}
-  //   >
-  //     <Button variant="success">Hover me to see</Button>
-  //   </OverlayTrigger>
-  // );
-
   render() {
     return (
       <div>
         <Input
-          placeholder="Введите название фильма"
+          style={{ width: "480px", margin: "5px" }}
+          placeholder="Поиск фильма по названию"
           value={this.props.inputTextValue}
           onChange={this.onInputText}
         />
@@ -58,7 +38,17 @@ class Movies extends React.Component {
         />
 
         {this.props.isHitList && (
-          <div>Найдено совпадений: {this.props.hitList}</div>
+          <div
+            className="card mx-auto"
+            style={{
+              width: "480px",
+              margin: "3px",
+              backgroundColor: "rgb(235, 235, 235)",
+              fontSize: "17px"
+            }}
+          >
+            Найдено совпадений: {this.props.hitList}
+          </div>
         )}
 
         <MoviesList
@@ -67,6 +57,7 @@ class Movies extends React.Component {
           isNextFilmsButton={this.props.isNextFilmsButton}
           onNextFilmsButton={this.props.nextFilmsButtonThunk}
         />
+
       </div>
     );
   }
