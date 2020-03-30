@@ -1,4 +1,4 @@
-import { isBookmarksState } from "./filmReducer"
+import { isBookmarksStateAC } from "./filmReducer"
 
 const GET_BOOKMARKS = '/bookmarks/GET_BOOKMARKS'
 const DELETE_BOOKMARKS = '/bookmarks/DELETE_BOOKMARKS'
@@ -64,7 +64,7 @@ export const setBookmarksThunk = filmName => async (dispatch, getState) => {
         return item
     })
 
-    dispatch(isBookmarksState(newFilmState))
+    dispatch(isBookmarksStateAC(newFilmState))
     localStorage.setItem('Movies', JSON.stringify(arr))
 }
 
