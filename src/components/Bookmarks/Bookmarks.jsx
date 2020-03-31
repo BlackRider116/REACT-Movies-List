@@ -1,17 +1,20 @@
 import React from "react";
-import styles from "../../styles/styles.module.scss";
 import { connect } from "react-redux";
 import {
   getBookmarksThunk,
   deleteBookmarksThunk,
   nextFavoritesFilmsThunk,
   deleteAllFavoritesThunk
-} from "../../redux/reducers/bookmarksReducer";
+} from "../../redux/reducers/bookmarksReducer.ts";
 import MoviesList from "../MoviesList/MoviesList";
 
 class Bookmarks extends React.Component {
   componentDidMount() {
     this.props.getBookmarksThunk();
+  }
+
+  componentDidUpdate(){
+  //  console.log(this.props.bookmarks)
   }
 
   render() {

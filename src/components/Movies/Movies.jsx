@@ -5,10 +5,9 @@ import {
   filterToMoviesThunk,
   nextFilmsButtonThunk,
   setBookmarksThunk
-} from "../../redux/reducers/filmReducer";
+} from "../../redux/reducers/filmReducer.ts";
 import { Input } from "antd";
 import PaginationTag from "../PaginationTag/PaginationTag.jsx";
-import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import MoviesList from "../MoviesList/MoviesList";
 
 class Movies extends React.Component {
