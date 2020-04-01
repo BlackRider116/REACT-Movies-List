@@ -15,7 +15,7 @@ let arrFilterMoviesBody = [] as Array<FilmsType>
 export type FilmsType = {
     title: string
     tags: Array<string>
-    isBookmarks?: boolean 
+    isBookmarks?: boolean
 }
 export type TagNamesType = {
     name: string
@@ -126,13 +126,13 @@ export const filterToMoviesThunk = (body: string, boolean: boolean): ThunkType =
         dispatch(activeTagNamesAC(filterFilmsByTag.slice(0, lengthOfMovieList), stateTagNames, activeTagNames, isMaxTagsError,
             nextButtonBoolean(filterFilmsByTag.length), filterFilmsByTag.length, isHitList(filterFilmsByTag)))
     }
-// поиск фильмов по названию
+    // поиск фильмов по названию
     function moviesFilterByName(movies: Array<FilmsType>, inputBody: string = '') {
         return movies.filter(item => {
             return item.title.toLowerCase().includes(inputBody)
         })
     }
-// поиск фильмов по тегу
+    // поиск фильмов по тегу
     function moviesFilterByTag(movies: Array<FilmsType>, activeTagNames: Array<string>) {
         let films = movies
         for (let tagActiveName of activeTagNames) {
@@ -142,7 +142,7 @@ export const filterToMoviesThunk = (body: string, boolean: boolean): ThunkType =
         }
         return films
     }
-// вкл/выкл тег "Найдено совпадений" при поиске фильмов
+    // вкл/выкл тег "Найдено совпадений" при поиске фильмов
     function isHitList(arr: Array<FilmsType>) {
         if (arr.length === response.length) {
             arrFilterMoviesBody = []
@@ -160,12 +160,12 @@ type NextFilmButtonActionType = { type: typeof GET_NEXT_FILMS, films: Array<Film
 const nextFilmButtonAC = (films: Array<FilmsType>, isNextFilmsButton: boolean): NextFilmButtonActionType => ({ type: GET_NEXT_FILMS, films: inFavorites(films), isNextFilmsButton })
 // кнопка "Показать еще", показывает следющие фильмы
 export const nextFilmsButtonThunk = (): ThunkType => async (dispatch, getState) => {
-    let state = getState().filmPage.films as Array<FilmsType>
+    let state = getState().filmPage.films
     let filmNames = !arrFilterMoviesBody.length ? await filmsAPI.getMovies() : arrFilterMoviesBody
 
-    state.map(itemFilm => {
+    for (let itemFilm of state) {
         filmNames = filmNames.filter(item => item.title !== itemFilm.title)
-    })
+    }
 
     dispatch(nextFilmButtonAC(filmNames.slice(0, lengthOfMovieList) as Array<FilmsType>, nextButtonBoolean(filmNames.length)))
 }
@@ -204,14 +204,15 @@ const inFavorites = (itemName: Array<FilmsType>) => {
     const getLocalItem = JSON.parse(localStorage.getItem('Movies') || '[]') as Array<FilmsType>
     let arrFilter = itemName
 
-    getLocalItem.map(localItem => {
+    for (let localItem of getLocalItem) {
         arrFilter = arrFilter.map(item => {
             if (item.title === localItem.title) {
                 return { ...item, isBookmarks: true }
             }
             return item
         })
-    })
+    }
+
     return arrFilter
 }
 
