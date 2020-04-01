@@ -8,7 +8,7 @@ import { Provider } from "react-redux";
 import store from "./redux/reduxStore";
 
 ReactDOM.render(
-  <BrowserRouter basename={process.env.PUBLIC_URL}>
+  <BrowserRouter basename={'https://blackrider116.github.io/TaksNet-REACT/'}>
     <Provider store={store}>
       <App />
     </Provider>
