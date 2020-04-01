@@ -1,22 +1,22 @@
 {
   "files": {
-    "main.css": "/TaksNet-REACT/static/css/main.2e114261.chunk.css",
-    "main.js": "/TaksNet-REACT/static/js/main.80d4a3c5.chunk.js",
-    "main.js.map": "/TaksNet-REACT/static/js/main.80d4a3c5.chunk.js.map",
+    "main.css": "/TaksNet-REACT/static/css/main.5aab2281.chunk.css",
+    "main.js": "/TaksNet-REACT/static/js/main.99ebc26c.chunk.js",
+    "main.js.map": "/TaksNet-REACT/static/js/main.99ebc26c.chunk.js.map",
     "runtime-main.js": "/TaksNet-REACT/static/js/runtime-main.7f7bcef8.js",
     "runtime-main.js.map": "/TaksNet-REACT/static/js/runtime-main.7f7bcef8.js.map",
-    "static/js/2.552998c2.chunk.js": "/TaksNet-REACT/static/js/2.552998c2.chunk.js",
-    "static/js/2.552998c2.chunk.js.map": "/TaksNet-REACT/static/js/2.552998c2.chunk.js.map",
+    "static/js/2.f4839a1b.chunk.js": "/TaksNet-REACT/static/js/2.f4839a1b.chunk.js",
+    "static/js/2.f4839a1b.chunk.js.map": "/TaksNet-REACT/static/js/2.f4839a1b.chunk.js.map",
     "index.html": "/TaksNet-REACT/index.html",
-    "precache-manifest.8f05bfb0eee5c118f11a3e141d18ac57.js": "/TaksNet-REACT/precache-manifest.8f05bfb0eee5c118f11a3e141d18ac57.js",
+    "precache-manifest.82a0843e3100d00dd5854db88b23a0a5.js": "/TaksNet-REACT/precache-manifest.82a0843e3100d00dd5854db88b23a0a5.js",
     "service-worker.js": "/TaksNet-REACT/service-worker.js",
-    "static/css/main.2e114261.chunk.css.map": "/TaksNet-REACT/static/css/main.2e114261.chunk.css.map",
-    "static/js/2.552998c2.chunk.js.LICENSE.txt": "/TaksNet-REACT/static/js/2.552998c2.chunk.js.LICENSE.txt"
+    "static/css/main.5aab2281.chunk.css.map": "/TaksNet-REACT/static/css/main.5aab2281.chunk.css.map",
+    "static/js/2.f4839a1b.chunk.js.LICENSE.txt": "/TaksNet-REACT/static/js/2.f4839a1b.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.7f7bcef8.js",
-    "static/js/2.552998c2.chunk.js",
-    "static/css/main.2e114261.chunk.css",
-    "static/js/main.80d4a3c5.chunk.js"
+    "static/js/2.f4839a1b.chunk.js",
+    "static/css/main.5aab2281.chunk.css",
+    "static/js/main.99ebc26c.chunk.js"
   ]
 }
