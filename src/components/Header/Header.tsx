@@ -2,7 +2,7 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import classes from "../../styles/styles.module.scss";
 
-const Header = () => {
+const Header: React.FC = () => {
   return (
     <nav>
       <div className={classes.item}>

@@ -1,5 +1,6 @@
-import data from '../../taksnetJSON/films.json'
-import tags from "../../taksnetJSON/tags.json";
+import { StateType } from '../reduxStore';
+import { ThunkAction } from 'redux-thunk';
+import { filmsAPI } from '../../api/api';
 
 const GET_FILMS = '/films/GET_FILM'
 const TEXT_BODY = '/films/TEXT_BODY'
@@ -8,22 +9,22 @@ const GET_NEXT_FILMS = '/films/GET_NEXT_FILMS'
 const IS_BOOKMARKS = '/films/IS_BOOKMARKS'
 
 const lengthOfMovieList: number = 15
-let arrFilterMoviesBody = [] as Array<filmsType>
+let arrFilterMoviesBody = [] as Array<FilmsType>
 
 
-type filmsType = {
+export type FilmsType = {
     title: string
     tags: Array<string>
-    isBookmarks: boolean
+    isBookmarks?: boolean 
 }
-type tagNamesType = {
+export type TagNamesType = {
     name: string
     tagActive: boolean
     id: number
 }
 const initialState = {
-    films: [] as Array<filmsType>,
-    tagNames: [] as Array<tagNamesType>,
+    films: [] as Array<FilmsType>,
+    tagNames: [] as Array<TagNamesType>,
     activeTagsName: [] as Array<string>,
     isMaxTagsError: false as boolean,
     isNextFilmsButton: false as boolean,
@@ -31,9 +32,9 @@ const initialState = {
     hitList: 0 as number,
     isHitList: false as boolean
 }
-type initialStateType = typeof initialState
+type InitialStateType = typeof initialState
 
-const filmReducer = (state = initialState, action: any): initialStateType => {
+const filmReducer = (state = initialState, action: any): InitialStateType => {
     switch (action.type) {
         case GET_FILMS:
         case TEXT_BODY:
@@ -57,58 +58,55 @@ const filmReducer = (state = initialState, action: any): initialStateType => {
     }
 }
 
+type ActionsTypes = GetFilmsActionType | OnInputBodyActionType | ActiveTagNamesActionType | NextFilmButtonActionType | IsBookmarksStateActionType
+type ThunkType = ThunkAction<Promise<void>, StateType, unknown, ActionsTypes>
 
-type getFilmsActionType = { type: typeof GET_FILMS
-    payload: { films: Array<filmsType>, tagNames: Array<tagNamesType>, isNextFilmsButton: boolean }
-}
-const getFilmsAC = (films: Array<filmsType>, tagNames: Array<tagNamesType>, isNextFilmsButton: boolean): getFilmsActionType =>
+
+type GetFilmsActionType = { type: typeof GET_FILMS, payload: { films: Array<FilmsType>, tagNames: Array<TagNamesType>, isNextFilmsButton: boolean } }
+const getFilmsAC = (films: Array<FilmsType>, tagNames: Array<TagNamesType>, isNextFilmsButton: boolean): GetFilmsActionType =>
     ({ type: GET_FILMS, payload: { films: inFavorites(films), tagNames, isNextFilmsButton } })
-
-export const getFilmsThunk = () => async (dispatch: any) => {
-    const response = await data
-    const responseTags = await tags
+// первичный запрос данных
+export const getFilmsThunk = (): ThunkType => async (dispatch, getState) => {
+    let response = !arrFilterMoviesBody.length ? await filmsAPI.getMovies() : arrFilterMoviesBody
+    const stateTags = getState().filmPage.tagNames
 
     let id = 0
-    const dataTagItem = responseTags.map((item) => {
+    const dataTagItem = !stateTags.length ? await filmsAPI.getTags().map((item) => {
         id++
         return ({ name: item, tagActive: false, id })
-    })
+    }) : stateTags
 
-    dispatch(getFilmsAC(response.slice(0, lengthOfMovieList) as Array<filmsType>, dataTagItem as Array<tagNamesType>, nextButtonBoolean(data.length)))
+    dispatch(getFilmsAC(response.slice(0, lengthOfMovieList) as Array<FilmsType>, dataTagItem as Array<TagNamesType>, nextButtonBoolean(response.length)))
 }
 
-
-type onInputBodyActionType = { type: typeof TEXT_BODY,
-    payload: { films: Array<filmsType>, inputTextValue: string, isNextFilmsButton: boolean, hitList: number, isHitList: boolean }
-}
-const onInputBodyAC = (films: Array<filmsType>, inputTextValue: string, isNextFilmsButton: boolean, hitList: number, isHitList: boolean): onInputBodyActionType => ({
+// Action Creator при поиске по названию
+type OnInputBodyActionType = { type: typeof TEXT_BODY, payload: { films: Array<FilmsType>, inputTextValue: string, isNextFilmsButton: boolean, hitList: number, isHitList: boolean } }
+const onInputBodyAC = (films: Array<FilmsType>, inputTextValue: string, isNextFilmsButton: boolean, hitList: number, isHitList: boolean): OnInputBodyActionType => ({
     type: TEXT_BODY,
     payload: { films: inFavorites(films), inputTextValue, isNextFilmsButton, hitList, isHitList }
 })
-
-type activeTagNamesActionType = { type: typeof ACTIVE_TAG_NAME,
-    payload: { films: Array<filmsType>, tagNames: Array<tagNamesType>, activeTagsName: Array<string>,
-        isMaxTagsError: boolean, isNextFilmsButton: boolean, hitList: number, isHitList: boolean }
-}
-const activeTagNamesAC = (films: Array<filmsType>, tagNames: Array<tagNamesType>, activeTagsName: Array<string>,
-    isMaxTagsError: boolean, isNextFilmsButton: boolean, hitList: number, isHitList: boolean): activeTagNamesActionType => ({
+// Action Creator при поиске по тегу
+type ActiveTagNamesActionType = { type: typeof ACTIVE_TAG_NAME, payload: { films: Array<FilmsType>, tagNames: Array<TagNamesType>, activeTagsName: Array<string>, isMaxTagsError: boolean, isNextFilmsButton: boolean, hitList: number, isHitList: boolean } }
+const activeTagNamesAC = (films: Array<FilmsType>, tagNames: Array<TagNamesType>, activeTagsName: Array<string>,
+    isMaxTagsError: boolean, isNextFilmsButton: boolean, hitList: number, isHitList: boolean): ActiveTagNamesActionType => ({
         type: ACTIVE_TAG_NAME,
         payload: { films: inFavorites(films), tagNames, activeTagsName, isMaxTagsError, isNextFilmsButton, hitList, isHitList }
     })
 
-export const filterToMoviesThunk = (body: string, boolean: boolean) => async (dispatch: any, getState: any) => {
-    const response = await data
+// поиск фильмов по тегу и названию
+export const filterToMoviesThunk = (body: string, boolean: boolean): ThunkType => async (dispatch, getState) => {
+    const response = await filmsAPI.getMovies()
     const stateActiveTags = getState().filmPage.activeTagsName
     const stateInputTextValue = getState().filmPage.inputTextValue
 
-    if (boolean === true) {
-        const moviesByTag = moviesFilterByTag(response as Array<filmsType>, stateActiveTags)
+    if (boolean === true) {// поиск по названию
+        const moviesByTag = moviesFilterByTag(response, stateActiveTags)
         const filterFilmsName = moviesFilterByName(moviesByTag, body)
 
         dispatch(onInputBodyAC(filterFilmsName.slice(0, lengthOfMovieList), body,
             nextButtonBoolean(filterFilmsName.length), filterFilmsName.length, isHitList(filterFilmsName)))
-    } else {
-        let stateTagNames = getState().filmPage.tagNames as Array<tagNamesType>
+    } else {// поиск по тегу
+        let stateTagNames = getState().filmPage.tagNames
         let activeTagNames = [] as Array<string>
 
         stateTagNames = stateTagNames.map(item => {
@@ -121,21 +119,21 @@ export const filterToMoviesThunk = (body: string, boolean: boolean) => async (di
             return item
         })
 
-        const moviesByName = moviesFilterByName(response as Array<filmsType>, stateInputTextValue)
+        const moviesByName = moviesFilterByName(response, stateInputTextValue)
         const filterFilmsByTag = moviesFilterByTag(moviesByName, activeTagNames)
 
         const isMaxTagsError = stateActiveTags.length === 3 && activeTagNames.length === 3 ? true : false
         dispatch(activeTagNamesAC(filterFilmsByTag.slice(0, lengthOfMovieList), stateTagNames, activeTagNames, isMaxTagsError,
             nextButtonBoolean(filterFilmsByTag.length), filterFilmsByTag.length, isHitList(filterFilmsByTag)))
     }
-
-    function moviesFilterByName(movies: Array<filmsType>, inputBody: string = '') {
+// поиск фильмов по названию
+    function moviesFilterByName(movies: Array<FilmsType>, inputBody: string = '') {
         return movies.filter(item => {
             return item.title.toLowerCase().includes(inputBody)
         })
     }
-
-    function moviesFilterByTag(movies: Array<filmsType>, activeTagNames: Array<string>) {
+// поиск фильмов по тегу
+    function moviesFilterByTag(movies: Array<FilmsType>, activeTagNames: Array<string>) {
         let films = movies
         for (let tagActiveName of activeTagNames) {
             films = films.filter(item => {
@@ -144,8 +142,8 @@ export const filterToMoviesThunk = (body: string, boolean: boolean) => async (di
         }
         return films
     }
-
-    function isHitList(arr: Array<filmsType>) {
+// вкл/выкл тег "Найдено совпадений" при поиске фильмов
+    function isHitList(arr: Array<FilmsType>) {
         if (arr.length === response.length) {
             arrFilterMoviesBody = []
             return false
@@ -158,30 +156,28 @@ export const filterToMoviesThunk = (body: string, boolean: boolean) => async (di
 }
 
 
-
-type nextFilmButtonActionType = { type: typeof GET_NEXT_FILMS, films: Array<filmsType>, isNextFilmsButton: boolean }
-const nextFilmButtonAC = (films: Array<filmsType>, isNextFilmsButton: boolean): nextFilmButtonActionType => ({ type: GET_NEXT_FILMS, films: inFavorites(films), isNextFilmsButton })
-
-export const nextFilmsButtonThunk = () => async (dispatch: any, getState: any) => {
-    let state = getState().filmPage.films as Array<filmsType>
-    let filmNames = !arrFilterMoviesBody.length ? await data : arrFilterMoviesBody
+type NextFilmButtonActionType = { type: typeof GET_NEXT_FILMS, films: Array<FilmsType>, isNextFilmsButton: boolean }
+const nextFilmButtonAC = (films: Array<FilmsType>, isNextFilmsButton: boolean): NextFilmButtonActionType => ({ type: GET_NEXT_FILMS, films: inFavorites(films), isNextFilmsButton })
+// кнопка "Показать еще", показывает следющие фильмы
+export const nextFilmsButtonThunk = (): ThunkType => async (dispatch, getState) => {
+    let state = getState().filmPage.films as Array<FilmsType>
+    let filmNames = !arrFilterMoviesBody.length ? await filmsAPI.getMovies() : arrFilterMoviesBody
 
     state.map(itemFilm => {
         filmNames = filmNames.filter(item => item.title !== itemFilm.title)
     })
 
-    dispatch(nextFilmButtonAC(filmNames.slice(0, lengthOfMovieList) as Array<filmsType>, nextButtonBoolean(filmNames.length)))
+    dispatch(nextFilmButtonAC(filmNames.slice(0, lengthOfMovieList) as Array<FilmsType>, nextButtonBoolean(filmNames.length)))
 }
 
 
-
-type isBookmarksStateActionType = { type: typeof IS_BOOKMARKS, payload: { films: Array<filmsType> } }
-const isBookmarksStateAC = (films: Array<filmsType>): isBookmarksStateActionType => ({ type: IS_BOOKMARKS, payload: { films } })
-
-export const setBookmarksThunk = (filmName: filmsType) => async (dispatch: any, getState: any) => {
-    const stateFilms = getState().filmPage.films as Array<filmsType>
-    const getLocalItem = JSON.parse(localStorage.getItem('Movies') || '[]') as Array<filmsType>
-    let arr = getLocalItem as Array<filmsType>
+type IsBookmarksStateActionType = { type: typeof IS_BOOKMARKS, payload: { films: Array<FilmsType> } }
+const isBookmarksStateAC = (films: Array<FilmsType>): IsBookmarksStateActionType => ({ type: IS_BOOKMARKS, payload: { films } })
+// добавить или удалить фильм из избранного
+export const setBookmarksThunk = (filmName: FilmsType): ThunkType => async (dispatch, getState) => {
+    const getLocalItem = JSON.parse(localStorage.getItem('Movies') || '[]') as Array<FilmsType>
+    const stateFilms = getState().filmPage.films
+    let arr = getLocalItem
 
     const newFilmState = stateFilms.map(item => {
         if (item.title === filmName.title) {
@@ -198,12 +194,14 @@ export const setBookmarksThunk = (filmName: filmsType) => async (dispatch: any, 
     localStorage.setItem('Movies', JSON.stringify(arr))
 }
 
+// вкл/выкл кнопку "показать еще"
 const nextButtonBoolean = (arrLength: number) => {
     return arrLength <= lengthOfMovieList ? false : true
 }
 
-const inFavorites = (itemName: Array<filmsType>) => {
-    const getLocalItem = JSON.parse(localStorage.getItem('Movies') || '[]') as Array<filmsType>
+// проверяет если фильмы в избранном
+const inFavorites = (itemName: Array<FilmsType>) => {
+    const getLocalItem = JSON.parse(localStorage.getItem('Movies') || '[]') as Array<FilmsType>
     let arrFilter = itemName
 
     getLocalItem.map(localItem => {

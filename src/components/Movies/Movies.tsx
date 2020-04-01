@@ -1,21 +1,42 @@
-import React from "react";
+import React, { ChangeEvent } from "react";
 import { connect } from "react-redux";
 import {
   getFilmsThunk,
   filterToMoviesThunk,
   nextFilmsButtonThunk,
-  setBookmarksThunk
-} from "../../redux/reducers/filmReducer.ts";
+  setBookmarksThunk,
+  FilmsType,
+  TagNamesType
+} from "../../redux/reducers/filmReducer";
 import { Input } from "antd";
-import PaginationTag from "../PaginationTag/PaginationTag.jsx";
+import PaginationTag from "../PaginationTag/PaginationTag";
 import MoviesList from "../MoviesList/MoviesList";
+import { StateType } from "../../redux/reduxStore";
 
-class Movies extends React.Component {
+
+type MapStateToPropsType = {
+  films: Array<FilmsType>
+  tagNames: Array<TagNamesType>
+  activeTagsName: Array<string>
+  isNextFilmsButton: boolean
+  inputTextValue: string
+  hitList: number
+  isHitList: boolean
+  isMaxTagsError: boolean
+}
+type MapDispatchToPropsType = {
+  getFilmsThunk: () => void
+  setBookmarksThunk: (item: FilmsType) => void
+  filterToMoviesThunk: (body: string, boolean: boolean) => void
+  nextFilmsButtonThunk: () => void
+}
+type PropsType = MapStateToPropsType & MapDispatchToPropsType
+class Movies extends React.Component<PropsType> {
   componentDidMount() {
     this.props.getFilmsThunk();
   }
 
-  onInputText = ev => {
+  onInputText = (ev: ChangeEvent<HTMLInputElement>) => {
     const body = ev.target.value;
     this.props.filterToMoviesThunk(body, true);
   };
@@ -25,7 +46,7 @@ class Movies extends React.Component {
       <div>
         <Input
           style={{ width: "480px", margin: "5px" }}
-          placeholder="Поиск фильма по названию"
+          placeholder=" Поиск фильма по названию"
           value={this.props.inputTextValue}
           onChange={this.onInputText}
         />
@@ -52,7 +73,7 @@ class Movies extends React.Component {
 
         <MoviesList
           filmNames={this.props.films}
-          isFavorites={this.props.setBookmarksThunk}
+          onFavorites={this.props.setBookmarksThunk}
           isNextFilmsButton={this.props.isNextFilmsButton}
           onNextFilmsButton={this.props.nextFilmsButtonThunk}
         />
@@ -62,7 +83,7 @@ class Movies extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state: StateType): MapStateToPropsType  => {
   return {
     films: state.filmPage.films,
     isNextFilmsButton: state.filmPage.isNextFilmsButton,
@@ -75,7 +96,7 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps, {
+export default connect<MapStateToPropsType, MapDispatchToPropsType, {}, StateType>(mapStateToProps, {
   getFilmsThunk,
   setBookmarksThunk,
   filterToMoviesThunk,

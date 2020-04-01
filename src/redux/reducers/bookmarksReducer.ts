@@ -1,3 +1,6 @@
+import { ThunkAction } from "redux-thunk"
+import { StateType } from "../reduxStore"
+
 const GET_BOOKMARKS = '/bookmarks/GET_BOOKMARKS'
 const DELETE_BOOKMARKS = '/bookmarks/DELETE_BOOKMARKS'
 const NEXT_FAVORITES_FILMS = '/bookmarks/NEXT_FAVORITES_FILMS'
@@ -5,19 +8,19 @@ const DELETE_ALL_FAVORITES = '/bookmarks/DELETE_ALL_FAVORITES'
 
 const lengthOfMovieList = 15
 
-type bookmarksType = {
+export type BookmarksType = {
     title: string
     tags: Array<string>
-    isBookmarks: boolean
+    isBookmarks?: boolean
 }
 const initialState = {
-    bookmarks: [] as Array<bookmarksType>,
+    bookmarks: [] as Array<BookmarksType>,
     isFavoritesButton: false as boolean,
     favoritesLength: 0 as number
 }
-type initialStateType = typeof initialState
+type InitialStateType = typeof initialState
 
-const bookmarksReducer = (state = initialState, action: any): initialStateType => {
+const bookmarksReducer = (state = initialState, action: ActionsTypes): InitialStateType => {
     switch (action.type) {
         case GET_BOOKMARKS:
         case DELETE_BOOKMARKS:
@@ -40,33 +43,29 @@ const bookmarksReducer = (state = initialState, action: any): initialStateType =
     }
 }
 
+type ActionsTypes = GetBookmarksActionType | DeleteBookmarksActionType | NextFavoritesFilmsActionType | DeleteAllFavoritesActionType
+type ThunkType = ThunkAction<void, StateType, unknown, ActionsTypes>
 
-
-type getBookmarksActionType = { type: typeof GET_BOOKMARKS,
-    payload: { bookmarks: Array<bookmarksType>, isFavoritesButton: boolean, favoritesLength: number }
-}
-const getBookmarksAC = (bookmarks: Array<bookmarksType>, isFavoritesButton: boolean, favoritesLength: number): getBookmarksActionType => ({
+type GetBookmarksActionType = { type: typeof GET_BOOKMARKS, payload: { bookmarks: Array<BookmarksType>, isFavoritesButton: boolean, favoritesLength: number } }
+const getBookmarksAC = (bookmarks: Array<BookmarksType>, isFavoritesButton: boolean, favoritesLength: number): GetBookmarksActionType => ({
     type: GET_BOOKMARKS,
     payload: { bookmarks, isFavoritesButton, favoritesLength }
 })
-
-export const getBookmarksThunk = () => (dispatch: any) => {
-    const getLocalItem = JSON.parse(localStorage.getItem('Movies') || '[]') as Array<bookmarksType>
+// первичный запрос данных
+export const getBookmarksThunk = (): ThunkType => (dispatch) => {
+    const getLocalItem = JSON.parse(localStorage.getItem('Movies') || '[]') as Array<BookmarksType>
     dispatch(getBookmarksAC(getLocalItem.slice(0, lengthOfMovieList), nextButtonBoolean(getLocalItem.length), getLocalItem.length))
 }
 
 
-
-type deleteBookmarksActionType = { type: typeof DELETE_BOOKMARKS,
-    payload: { bookmarks: Array<bookmarksType>, isFavoritesButton: boolean, favoritesLength: number }
-}
-const deleteBookmarks = (bookmarks: Array<bookmarksType>, isFavoritesButton: boolean, favoritesLength: number): deleteBookmarksActionType => ({
+type DeleteBookmarksActionType = { type: typeof DELETE_BOOKMARKS, payload: { bookmarks: Array<BookmarksType>, isFavoritesButton: boolean, favoritesLength: number } }
+const deleteBookmarks = (bookmarks: Array<BookmarksType>, isFavoritesButton: boolean, favoritesLength: number): DeleteBookmarksActionType => ({
     type: DELETE_BOOKMARKS,
     payload: { bookmarks, isFavoritesButton, favoritesLength }
 })
-
-export const deleteBookmarksThunk = (filmName: bookmarksType) => (dispatch: any) => {
-    const getLocalItem = JSON.parse(localStorage.getItem('Movies') || '[]') as Array<bookmarksType>
+// удаляет фильм из избранного
+export const deleteBookmarksThunk = (filmName: BookmarksType): ThunkType => (dispatch) => {
+    const getLocalItem = JSON.parse(localStorage.getItem('Movies') || '[]') as Array<BookmarksType>
     const newState = getLocalItem.filter(item => item.title !== filmName.title)
     localStorage.setItem('Movies', JSON.stringify(newState))
     dispatch(deleteBookmarks(newState.slice(0, lengthOfMovieList), nextButtonBoolean(newState.length), newState.length))
@@ -74,38 +73,39 @@ export const deleteBookmarksThunk = (filmName: bookmarksType) => (dispatch: any)
 
 
 
-type nextFavoritesFilmsActionType = { type: typeof NEXT_FAVORITES_FILMS, bookmarks: Array<bookmarksType>, isFavoritesButton: boolean }
-const nextFavoritesFilmsAC = (bookmarks: Array<bookmarksType>, isFavoritesButton: boolean): nextFavoritesFilmsActionType =>
+type NextFavoritesFilmsActionType = { type: typeof NEXT_FAVORITES_FILMS, bookmarks: Array<BookmarksType>, isFavoritesButton: boolean }
+const nextFavoritesFilmsAC = (bookmarks: Array<BookmarksType>, isFavoritesButton: boolean): NextFavoritesFilmsActionType =>
     ({ type: NEXT_FAVORITES_FILMS, bookmarks, isFavoritesButton })
+// кнопка "Показать еще", показывает следющие фильмы
+export const nextFavoritesFilmsThunk = (): ThunkType => (dispatch, getState) => {
+    let getLocalItem = JSON.parse(localStorage.getItem('Movies') || '[]') as Array<BookmarksType>
+    const state = getState().bookmarksPage.bookmarks
 
-export const nextFavoritesFilmsThunk = () => (dispatch: any, getState: any) => {
-    let getLocalItem = JSON.parse(localStorage.getItem('Movies') || '[]') as Array<bookmarksType>
-    const state: Array<bookmarksType> = getState().bookmarksPage.bookmarks
-
-    state.map(itemFilm => {
+    for (let itemFilm of state) {
         getLocalItem = getLocalItem.filter(item => item.title !== itemFilm.title)
-    })
+    }
 
     dispatch(nextFavoritesFilmsAC(getLocalItem.slice(0, lengthOfMovieList), nextButtonBoolean(getLocalItem.length)))
 }
 
+// вкл/выкл кнопку "показать еще"
 const nextButtonBoolean = (arrLength: number) => {
     return arrLength <= lengthOfMovieList ? false : true
 }
 
 
-
-type deleteAllFavoritesActionType = { type: typeof DELETE_ALL_FAVORITES,
-    payload: { bookmarks: Array<bookmarksType>, isFavoritesButton: boolean, favoritesLength: number }
-}
-const deleteAllFavoritesAC = (bookmarks: Array<bookmarksType>, isFavoritesButton: boolean, favoritesLength: number): deleteAllFavoritesActionType => ({
+type DeleteAllFavoritesActionType = { type: typeof DELETE_ALL_FAVORITES, payload: { bookmarks: Array<BookmarksType>, isFavoritesButton: boolean, favoritesLength: number } }
+const deleteAllFavoritesAC = (bookmarks: Array<BookmarksType>, isFavoritesButton: boolean, favoritesLength: number): DeleteAllFavoritesActionType => ({
     type: DELETE_ALL_FAVORITES,
     payload: { bookmarks, isFavoritesButton, favoritesLength }
 })
-
-export const deleteAllFavoritesThunk = () => (dispatch: any) => {
-    localStorage.removeItem('Movies');
-    dispatch(deleteAllFavoritesAC([], false, 0))
+// кнопка "Очистить список"
+export const deleteAllFavoritesThunk = (): ThunkType => (dispatch) => {
+    const removeLocalStorage = window.confirm('Вы уверены, что хотите очистить список?')
+    if (removeLocalStorage) {
+        localStorage.removeItem('Movies');
+        dispatch(deleteAllFavoritesAC([], false, 0))
+    }
 }
 
 export default bookmarksReducer;

@@ -1,12 +1,16 @@
 import React, { useState } from "react";
 import classes from "../../styles/styles.module.scss";
+import { TagNamesType } from "../../redux/reducers/filmReducer";
 
-const PaginationTag = ({
-  tagNames,
-  tagFilmsThunk,
-  portionSize = 6,
-  ...props
-}) => {
+
+type PropsType = {
+  tagNames: Array<TagNamesType>
+  portionSize?: number
+  isMaxTagsError: boolean
+  tagFilmsThunk: (name: string, boolean: boolean) => void
+}
+const PaginationTag: React.FC<PropsType> = ({tagNames, tagFilmsThunk, portionSize = 6, isMaxTagsError}) => {
+  
   let [portionNumber, setPortionNumber] = useState(1);
   let leftPortionTagNumber = (portionNumber - 1) * portionSize + 1;
   let rightPortionTagNumber = portionNumber * portionSize;
@@ -36,7 +40,7 @@ const PaginationTag = ({
                   : classes.tagStyle
               }
               key={item.id}
-              onClick={() => tagFilmsThunk(item.name)}
+              onClick={() => tagFilmsThunk(item.name, false)}
             >
               {item.name}
             </span>
@@ -52,12 +56,8 @@ const PaginationTag = ({
         </span>
       )}
 
-      {props.isMaxTagsError && (
-        <div
-        className={classes.maxTagsError}
-        >
-          Выбрано максимум 3 тега !
-        </div>
+      {isMaxTagsError && (
+        <div className={classes.maxTagsError}>Выбрано максимум 3 тега !</div>
       )}
     </div>
   );

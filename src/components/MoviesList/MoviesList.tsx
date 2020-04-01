@@ -1,37 +1,15 @@
 import React from "react";
 import styles from "../../styles/styles.module.scss";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { FilmsType } from "../../redux/reducers/filmReducer";
 
-const MoviesList = ({
-  filmNames,
-  isFavorites,
-  isNextFilmsButton,
-  onNextFilmsButton
-}) => {
-  const Example = ({ item }) => (
-    <OverlayTrigger
-      key="right"
-      placement="right"
-      overlay={
-        <Tooltip>
-          {item.isBookmarks ? "Удалить из закладок" : "Добавить в избранное"}
-        </Tooltip>
-      }
-    >
-      <span
-        className={styles.selected}
-        onClick={() => {
-          isFavorites(item);
-        }}
-      >
-        {item.isBookmarks ? (
-          <div className={styles.selectedOk}>★</div>
-        ) : (
-          <div>☆</div>
-        )}
-      </span>
-    </OverlayTrigger>
-  );
+type PropsType = {
+  filmNames: Array<FilmsType>
+  isNextFilmsButton: boolean
+  onFavorites: (item: FilmsType) => void
+  onNextFilmsButton: () => void
+}
+const MoviesList: React.FC<PropsType> = ({ filmNames, onFavorites, isNextFilmsButton, onNextFilmsButton }) => {
 
   return (
     <div style={{ margin: "8px" }}>
@@ -49,7 +27,15 @@ const MoviesList = ({
             <h5 className={styles.content}>
               <span className={styles.contentMovies}>{item.title}</span>
 
-              <Example item={item} />
+              <OverlayTrigger placement="right" overlay={
+                //@ts-ignore
+                <Tooltip>{item.isBookmarks ? "Удалить из закладок" : "Добавить в избранное"}</Tooltip>
+              }>
+                <span className={styles.selected} onClick={() => {onFavorites(item)}}>
+                {item.isBookmarks ? <div className={styles.selectedOk}>★</div> : <div>☆</div>}
+                </span>
+              </OverlayTrigger>
+
             </h5>
           </div>
         );

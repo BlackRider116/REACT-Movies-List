@@ -4,17 +4,30 @@ import {
   getBookmarksThunk,
   deleteBookmarksThunk,
   nextFavoritesFilmsThunk,
-  deleteAllFavoritesThunk
-} from "../../redux/reducers/bookmarksReducer.ts";
+  deleteAllFavoritesThunk,
+  BookmarksType
+} from "../../redux/reducers/bookmarksReducer";
 import MoviesList from "../MoviesList/MoviesList";
+import { StateType } from "../../redux/reduxStore";
+import { FilmsType } from "../../redux/reducers/filmReducer";
 
-class Bookmarks extends React.Component {
+
+type MapStateToPropsType = {
+  bookmarks: Array<BookmarksType>
+  isFavoritesButton: boolean
+  favoritesLength: number
+}
+type MapDispatchToPropsType = {
+  getBookmarksThunk: () => void
+  nextFavoritesFilmsThunk: () => void
+  deleteBookmarksThunk: (item: FilmsType) => void
+  deleteAllFavoritesThunk: () => void
+}
+type PropsType = MapStateToPropsType & MapDispatchToPropsType
+
+class Bookmarks extends React.Component<PropsType> {
   componentDidMount() {
     this.props.getBookmarksThunk();
-  }
-
-  componentDidUpdate(){
-  //  console.log(this.props.bookmarks)
   }
 
   render() {
@@ -40,13 +53,13 @@ class Bookmarks extends React.Component {
               </button>
             </div>
           ) : (
-            <div>Вы не выбрали ни одного фильма</div>
-          )}
+              <div>Вы не выбрали ни одного фильма</div>
+            )}
         </div>
 
         <MoviesList
           filmNames={this.props.bookmarks}
-          isFavorites={this.props.deleteBookmarksThunk}
+          onFavorites={this.props.deleteBookmarksThunk}
           isNextFilmsButton={this.props.isFavoritesButton}
           onNextFilmsButton={this.props.nextFavoritesFilmsThunk}
         />
@@ -55,7 +68,7 @@ class Bookmarks extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state: StateType): MapStateToPropsType => {
   return {
     bookmarks: state.bookmarksPage.bookmarks,
     isFavoritesButton: state.bookmarksPage.isFavoritesButton,
@@ -63,7 +76,8 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps, {
+
+export default connect<MapStateToPropsType, MapDispatchToPropsType, {}, StateType>((mapStateToProps), {
   getBookmarksThunk,
   deleteBookmarksThunk,
   nextFavoritesFilmsThunk,
