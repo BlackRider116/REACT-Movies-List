@@ -1,22 +1,22 @@
 {
   "files": {
     "main.css": "/TaksNet-REACT/static/css/main.5aab2281.chunk.css",
-    "main.js": "/TaksNet-REACT/static/js/main.7ca0628c.chunk.js",
-    "main.js.map": "/TaksNet-REACT/static/js/main.7ca0628c.chunk.js.map",
+    "main.js": "/TaksNet-REACT/static/js/main.4f5e9ac2.chunk.js",
+    "main.js.map": "/TaksNet-REACT/static/js/main.4f5e9ac2.chunk.js.map",
     "runtime-main.js": "/TaksNet-REACT/static/js/runtime-main.7f7bcef8.js",
     "runtime-main.js.map": "/TaksNet-REACT/static/js/runtime-main.7f7bcef8.js.map",
-    "static/js/2.f4839a1b.chunk.js": "/TaksNet-REACT/static/js/2.f4839a1b.chunk.js",
-    "static/js/2.f4839a1b.chunk.js.map": "/TaksNet-REACT/static/js/2.f4839a1b.chunk.js.map",
+    "static/js/2.2a68b127.chunk.js": "/TaksNet-REACT/static/js/2.2a68b127.chunk.js",
+    "static/js/2.2a68b127.chunk.js.map": "/TaksNet-REACT/static/js/2.2a68b127.chunk.js.map",
     "index.html": "/TaksNet-REACT/index.html",
-    "precache-manifest.29961a8d5afc70612ba48548c58525c5.js": "/TaksNet-REACT/precache-manifest.29961a8d5afc70612ba48548c58525c5.js",
+    "precache-manifest.959b4c3c8e758998e1db2f60f8cdd4fb.js": "/TaksNet-REACT/precache-manifest.959b4c3c8e758998e1db2f60f8cdd4fb.js",
     "service-worker.js": "/TaksNet-REACT/service-worker.js",
     "static/css/main.5aab2281.chunk.css.map": "/TaksNet-REACT/static/css/main.5aab2281.chunk.css.map",
-    "static/js/2.f4839a1b.chunk.js.LICENSE.txt": "/TaksNet-REACT/static/js/2.f4839a1b.chunk.js.LICENSE.txt"
+    "static/js/2.2a68b127.chunk.js.LICENSE.txt": "/TaksNet-REACT/static/js/2.2a68b127.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.7f7bcef8.js",
-    "static/js/2.f4839a1b.chunk.js",
+    "static/js/2.2a68b127.chunk.js",
     "static/css/main.5aab2281.chunk.css",
-    "static/js/main.7ca0628c.chunk.js"
+    "static/js/main.4f5e9ac2.chunk.js"
   ]
 }

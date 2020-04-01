@@ -1,23 +1,23 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "942abb52271ce4d5418a078ab95ab5d4",
+    "revision": "9008755ba83cca4352e9de23b0109ce2",
     "url": "/TaksNet-REACT/index.html"
   },
   {
-    "revision": "f9a907844ec48f8257e6",
+    "revision": "d2528b22db84702b7f64",
     "url": "/TaksNet-REACT/static/css/main.5aab2281.chunk.css"
   },
   {
-    "revision": "80a41866cc2e1d1ad794",
-    "url": "/TaksNet-REACT/static/js/2.f4839a1b.chunk.js"
+    "revision": "939e92221ec07afef647",
+    "url": "/TaksNet-REACT/static/js/2.2a68b127.chunk.js"
   },
   {
     "revision": "3453b8997016469371284a28c0e873e2",
-    "url": "/TaksNet-REACT/static/js/2.f4839a1b.chunk.js.LICENSE.txt"
+    "url": "/TaksNet-REACT/static/js/2.2a68b127.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "f9a907844ec48f8257e6",
-    "url": "/TaksNet-REACT/static/js/main.7ca0628c.chunk.js"
+    "revision": "d2528b22db84702b7f64",
+    "url": "/TaksNet-REACT/static/js/main.4f5e9ac2.chunk.js"
   },
   {
     "revision": "0684ff0b5963d012404c",
