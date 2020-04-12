@@ -34,7 +34,7 @@ const initialState = {
 }
 type InitialStateType = typeof initialState
 
-const filmReducer = (state = initialState, action: any): InitialStateType => {
+const filmReducer = (state = initialState, action: ActionsTypes): InitialStateType => {
     switch (action.type) {
         case GET_FILMS:
         case TEXT_BODY:
