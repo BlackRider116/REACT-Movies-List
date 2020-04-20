@@ -1,22 +1,22 @@
 {
   "files": {
-    "main.css": "/TaksNet-REACT/static/css/main.5aab2281.chunk.css",
-    "main.js": "/TaksNet-REACT/static/js/main.4f5e9ac2.chunk.js",
-    "main.js.map": "/TaksNet-REACT/static/js/main.4f5e9ac2.chunk.js.map",
-    "runtime-main.js": "/TaksNet-REACT/static/js/runtime-main.7f7bcef8.js",
-    "runtime-main.js.map": "/TaksNet-REACT/static/js/runtime-main.7f7bcef8.js.map",
-    "static/js/2.2a68b127.chunk.js": "/TaksNet-REACT/static/js/2.2a68b127.chunk.js",
-    "static/js/2.2a68b127.chunk.js.map": "/TaksNet-REACT/static/js/2.2a68b127.chunk.js.map",
-    "index.html": "/TaksNet-REACT/index.html",
-    "precache-manifest.959b4c3c8e758998e1db2f60f8cdd4fb.js": "/TaksNet-REACT/precache-manifest.959b4c3c8e758998e1db2f60f8cdd4fb.js",
-    "service-worker.js": "/TaksNet-REACT/service-worker.js",
-    "static/css/main.5aab2281.chunk.css.map": "/TaksNet-REACT/static/css/main.5aab2281.chunk.css.map",
-    "static/js/2.2a68b127.chunk.js.LICENSE.txt": "/TaksNet-REACT/static/js/2.2a68b127.chunk.js.LICENSE.txt"
+    "main.css": "/REACT-Movies-List/static/css/main.1764a6a6.chunk.css",
+    "main.js": "/REACT-Movies-List/static/js/main.429a6460.chunk.js",
+    "main.js.map": "/REACT-Movies-List/static/js/main.429a6460.chunk.js.map",
+    "runtime-main.js": "/REACT-Movies-List/static/js/runtime-main.30ff61da.js",
+    "runtime-main.js.map": "/REACT-Movies-List/static/js/runtime-main.30ff61da.js.map",
+    "static/js/2.2a68b127.chunk.js": "/REACT-Movies-List/static/js/2.2a68b127.chunk.js",
+    "static/js/2.2a68b127.chunk.js.map": "/REACT-Movies-List/static/js/2.2a68b127.chunk.js.map",
+    "index.html": "/REACT-Movies-List/index.html",
+    "precache-manifest.f88890da3926ace9a272fe74a74d1807.js": "/REACT-Movies-List/precache-manifest.f88890da3926ace9a272fe74a74d1807.js",
+    "service-worker.js": "/REACT-Movies-List/service-worker.js",
+    "static/css/main.1764a6a6.chunk.css.map": "/REACT-Movies-List/static/css/main.1764a6a6.chunk.css.map",
+    "static/js/2.2a68b127.chunk.js.LICENSE.txt": "/REACT-Movies-List/static/js/2.2a68b127.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.7f7bcef8.js",
+    "static/js/runtime-main.30ff61da.js",
     "static/js/2.2a68b127.chunk.js",
-    "static/css/main.5aab2281.chunk.css",
-    "static/js/main.4f5e9ac2.chunk.js"
+    "static/css/main.1764a6a6.chunk.css",
+    "static/js/main.429a6460.chunk.js"
   ]
 }
