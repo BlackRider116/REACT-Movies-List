@@ -2,7 +2,7 @@
   "name": "react-tz",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://blackrider116.github.io/TaksNet-REACT",
+  "homepage": "https://blackrider116.github.io/REACT-Movies-List",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
